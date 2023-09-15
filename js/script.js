@@ -3,62 +3,92 @@ Treehouse Techdegree:
 FSJS Project 2 - Data Pagination and Filtering
 */
 
-
-
 /*
 For assistance:
    Check out the "Project Resources" section of the Instructions tab: https://teamtreehouse.com/projects/data-pagination-and-filtering#instructions
    Reach out in your Slack community: https://treehouse-fsjs-102.slack.com/app_redirect?channel=unit-2
 */
 
-
-
 /*
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
 */
-Function showPage(list, page) {
-   const startIndex = (page * 9) - 9;
-   const endIndex = page * 9;
-   const studentList = document.querySelector('.student-list');
-   studentList.innerHTML = '';
-   for (let i = 0; i < list.length; i++) {
-      if (i >= startIndex && i < endIndex) {
-         const studentItem = document.createElement('li');
-         studentItem.className = 'student-item cf';
-         studentList.appendChild(studentItem);
-         const studentDetails = document.createElement('div');
-         studentDetails.className = 'student-details';
-         studentItem.appendChild(studentDetails);
-         const studentImage = document.createElement('img');
-         studentImage.className = 'avatar';
-         studentImage.src = list[i].picture.large;
-         studentImage.alt = 'Profile Picture';
-         studentDetails.appendChild(studentImage);
-         const studentName = document.createElement('h3');
-         studentName.textContent = `${list[i].name.first} ${list[i].name.last}`;
-         studentDetails.appendChild(studentName);
-         const studentEmail = document.createElement('span');
-         studentEmail.className = 'email';
-         studentEmail.textContent = list[i].email;
-         studentDetails.appendChild(studentEmail);
-         const joinedDetails = document.createElement('div');
-         joinedDetails.className = 'joined-details';
-         studentItem.appendChild(joinedDetails);
-         const joinedDate = document.createElement('span');
-         joinedDate.className = 'date';
-         joinedDate.textContent = `Joined ${list[i].registered.date}`;
-         joinedDetails.appendChild(joinedDate);
-      }
-   }
+const studentsPerPage = 9;
+let currentPage = 1;
+
+function showPage(page, studentData) {
+  const start = (page - 1) * studentsPerPage;
+  const end = page * studentsPerPage;
+  const studentList = document.querySelector('.student-list');
+  studentList.innerHTML = '';
+
+  for (let i = start; i < end && i < studentData.length; i++) {
+    const student = studentData[i];
+    const studentItem = `
+      <li class="student-item cf">
+        <div class="student-details">
+          <img class="avatar" src="${student.picture.large}" alt="Profile Picture">
+          <h3>${student.name.first} ${student.name.last}</h3>
+          <span class="email">${student.email}</span>
+        </div>
+        <div class="joined-details">
+          <span class="date">Joined ${student.registered.date}</span>
+        </div>
+      </li>
+    `;
+    studentList.innerHTML += studentItem;
+  }
 }
 
 
 /*
 Create the `addPagination` function
-This function will create and insert/append the elements needed for the pagination buttons
-*/
-function 
+This function will create and insert/append the elements needed for the pagination buttons*/
+
+function addPagination(studentData) {
+   const totalPages = Math.ceil(studentData.length / studentsPerPage);
+   const pagination = document.querySelector('.pagination');
+   pagination.innerHTML = '';
+ 
+   for (let i = 1; i <= totalPages; i++) {
+     const btn = document.createElement('button');
+     btn.textContent = i;
+     btn.addEventListener('click', function () {
+       showPage(i, studentData);
+       currentPage = i;
+     });
+     pagination.appendChild(btn);
+   }
+ }
 
 
-// Call functions
+ showPage(currentPage, data);
+ addPagination(data);
+
+ // Search functionality
+ function searchStudents(inputVal, studentData) {
+   const filteredStudents = studentData.filter(student => {
+       const fullName = `${student.name.first} ${student.name.last}`.toLowerCase();
+       return fullName.includes(inputVal.toLowerCase()) || student.email.toLowerCase().includes(inputVal.toLowerCase());
+   });
+
+   if (filteredStudents.length === 0) {
+       const studentList = document.querySelector('.student-list');
+       studentList.innerHTML = '<li>No students found...</li>';
+   } else {
+       showPage(1, filteredStudents);
+       addPagination(filteredStudents);
+   }
+}
+
+// Add event listeners for the search functionality
+document.querySelector('.student-search button').addEventListener('click', function() {
+   const inputVal = document.querySelector('.student-search input').value;
+   searchStudents(inputVal, data);
+});
+
+document.querySelector('.student-search input').addEventListener('keyup', function() {
+   const inputVal = document.querySelector('.student-search input').value;
+   searchStudents(inputVal, data);
+});
+

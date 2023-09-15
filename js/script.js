@@ -13,31 +13,34 @@ For assistance:
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
 */
-const studentsPerPage = 9;
-let currentPage = 1;
+//let currentPage = 1;
 
-function showPage(page, studentData) {
-  const start = (page - 1) * studentsPerPage;
-  const end = page * studentsPerPage;
-  const studentList = document.querySelector('.student-list');
-  studentList.innerHTML = '';
+const itemsPerPage = 9;
 
-  for (let i = start; i < end && i < studentData.length; i++) {
-    const student = studentData[i];
-    const studentItem = `
-      <li class="student-item cf">
-        <div class="student-details">
-          <img class="avatar" src="${student.picture.large}" alt="Profile Picture">
-          <h3>${student.name.first} ${student.name.last}</h3>
-          <span class="email">${student.email}</span>
-        </div>
-        <div class="joined-details">
-          <span class="date">Joined ${student.registered.date}</span>
-        </div>
-      </li>
-    `;
-    studentList.innerHTML += studentItem;
-  }
+function showPage(list, page) {
+    const startIndex = (page * itemsPerPage) - itemsPerPage;
+    const endIndex = page * itemsPerPage;
+    const studentList = document.querySelector('.student-list');
+    studentList.innerHTML = '';
+    
+    for (let i = 0; i < list.length; i++) {
+        if (i >= startIndex && i < endIndex) {
+            const student = list[i];
+            const studentItem = `
+                <li class="student-item cf">
+                    <div class="student-details">
+                        <img class="avatar" src="${student.picture.large}" alt="Profile Picture">
+                        <h3>${student.name.first} ${student.name.last}</h3>
+                        <span class="email">${student.email}</span>
+                    </div>
+                    <div class="joined-details">
+                        <span class="date">Joined ${student.registered.date}</span>
+                    </div>
+                </li>
+            `;
+            studentList.insertAdjacentHTML('beforeend', studentItem);
+        }
+    }
 }
 
 
@@ -45,28 +48,43 @@ function showPage(page, studentData) {
 Create the `addPagination` function
 This function will create and insert/append the elements needed for the pagination buttons*/
 
-function addPagination(studentData) {
-   const totalPages = Math.ceil(studentData.length / studentsPerPage);
-   const pagination = document.querySelector('.pagination');
-   pagination.innerHTML = '';
- 
+function addPagination(list) {
+   const totalPages = Math.ceil(list.length / itemsPerPage);
+   const linkList = document.querySelector('.link-list');
+   linkList.innerHTML = '';
+   
    for (let i = 1; i <= totalPages; i++) {
-     const btn = document.createElement('button');
-     btn.textContent = i;
-     btn.addEventListener('click', function () {
-       showPage(i, studentData);
-       currentPage = i;
-     });
-     pagination.appendChild(btn);
+       const btn = `
+           <li>
+               <button type="button">${i}</button>
+           </li>
+       `;
+       linkList.insertAdjacentHTML('beforeend', btn);
    }
- }
+   
+   if (totalPages > 0) {
+       linkList.querySelector('button').className = 'active';
+   }
 
+   linkList.addEventListener('click', (e) => {
+       if (e.target.tagName === 'BUTTON') {
+           const btn = e.target;
+           const active = document.querySelector('.active');
+           if (active) {
+               active.classList.remove('active');
+           }
+           btn.className = 'active';
+           showPage(list, parseInt(btn.textContent));
+       }
+   });
+}
 
- showPage(currentPage, data);
- addPagination(data);
+// Call the functions when the page loads
+showPage(data, 1);
+addPagination(data);
 
  // Search functionality
- function searchStudents(inputVal, studentData) {
+function searchStudents(inputVal, studentData) {
    const filteredStudents = studentData.filter(student => {
        const fullName = `${student.name.first} ${student.name.last}`.toLowerCase();
        return fullName.includes(inputVal.toLowerCase()) || student.email.toLowerCase().includes(inputVal.toLowerCase());
@@ -76,7 +94,7 @@ function addPagination(studentData) {
        const studentList = document.querySelector('.student-list');
        studentList.innerHTML = '<li>No students found...</li>';
    } else {
-       showPage(1, filteredStudents);
+       showPage(filteredStudents, 1);
        addPagination(filteredStudents);
    }
 }

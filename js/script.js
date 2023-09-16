@@ -13,7 +13,6 @@ For assistance:
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
 */
-//let currentPage = 1;
 
 const itemsPerPage = 9;
 
@@ -66,6 +65,7 @@ function addPagination(list) {
        linkList.querySelector('button').className = 'active';
    }
 
+   // Event listener for pagination buttons
    linkList.addEventListener('click', (e) => {
        if (e.target.tagName === 'BUTTON') {
            const btn = e.target;

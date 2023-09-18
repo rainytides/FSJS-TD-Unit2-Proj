@@ -25,7 +25,7 @@ const searchBarHTML = `
     </label>
 `;
 
-// Insert the search bar into the header element
+// Insert the search bar HTML
 document.querySelector('.header').insertAdjacentHTML('beforeend', searchBarHTML);
 
 function showPage(list, page) {

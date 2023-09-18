@@ -1,2 +1,2 @@
 # FSJS-TD-Unit2-Proj
- Second project
+ This is the second project completed as a requirement for the treehouse javascript techdegree

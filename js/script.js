@@ -16,6 +16,18 @@ This function will create and insert/append the elements needed to display a "pa
 
 const itemsPerPage = 9;
 
+// Search bar HTML
+const searchBarHTML = `
+    <label for="search" class="student-search">
+        <span>Search by name</span>
+        <input id="search" placeholder="Search by name...">
+        <button type="button"><img src="img/icn-search.svg" alt="Search icon"></button>
+    </label>
+`;
+
+// Insert the search bar into the header element
+document.querySelector('.header').insertAdjacentHTML('beforeend', searchBarHTML);
+
 function showPage(list, page) {
     const startIndex = (page * itemsPerPage) - itemsPerPage;
     const endIndex = page * itemsPerPage;
@@ -52,12 +64,18 @@ function addPagination(list) {
    const linkList = document.querySelector('.link-list');
    linkList.innerHTML = '';
    
+   if (list.length === 0) { // If no students are found, exit the function without adding pagination
+      return;
+  }
+
+
    for (let i = 1; i <= totalPages; i++) {
-       const btn = `
-           <li>
-               <button type="button">${i}</button>
-           </li>
-       `;
+       const isActive = i === 1 ? 'active' : ''; // Setting the first button as active
+        const btn = `
+            <li>
+                <button type="button" class="${isActive}">${i}</button>
+            </li>
+        `;
        linkList.insertAdjacentHTML('beforeend', btn);
    }
    
@@ -90,11 +108,14 @@ function searchStudents(inputVal, studentData) {
        return fullName.includes(inputVal.toLowerCase()) || student.email.toLowerCase().includes(inputVal.toLowerCase());
    });
 
+   const studentList = document.querySelector('.student-list');
    if (filteredStudents.length === 0) {
        const studentList = document.querySelector('.student-list');
        studentList.innerHTML = '<li>No students found...</li>';
+       document.querySelector('.link-list').innerHTML = '';
+       //addPagination([]);
    } else {
-       showPage(filteredStudents, 1);
+       showPage(1, filteredStudents);
        addPagination(filteredStudents);
    }
 }

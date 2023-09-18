@@ -79,9 +79,9 @@ function addPagination(list) {
        linkList.insertAdjacentHTML('beforeend', btn);
    }
    
-   if (totalPages > 0) {
+   /*if (totalPages > 0) {
        linkList.querySelector('button').className = 'active';
-   }
+   } */
 
    // Event listener for pagination buttons
    linkList.addEventListener('click', (e) => {
@@ -102,32 +102,31 @@ showPage(data, 1);
 addPagination(data);
 
  // Search functionality
-function searchStudents(inputVal, studentData) {
-   const filteredStudents = studentData.filter(student => {
-       const fullName = `${student.name.first} ${student.name.last}`.toLowerCase();
-       return fullName.includes(inputVal.toLowerCase()) || student.email.toLowerCase().includes(inputVal.toLowerCase());
-   });
-
-   const studentList = document.querySelector('.student-list');
-   if (filteredStudents.length === 0) {
-       const studentList = document.querySelector('.student-list');
-       studentList.innerHTML = '<li>No students found...</li>';
-       document.querySelector('.link-list').innerHTML = '';
-       //addPagination([]);
-   } else {
-       showPage(1, filteredStudents);
-       addPagination(filteredStudents);
-   }
-}
-
-// Add event listeners for the search functionality
-document.querySelector('.student-search button').addEventListener('click', function() {
-   const inputVal = document.querySelector('.student-search input').value;
-   searchStudents(inputVal, data);
-});
-
-document.querySelector('.student-search input').addEventListener('keyup', function() {
-   const inputVal = document.querySelector('.student-search input').value;
-   searchStudents(inputVal, data);
-});
-
+ function searchStudents(inputVal, studentData) {
+    const filteredStudents = studentData.filter(student => {
+        const fullName = `${student.name.first} ${student.name.last}`.toLowerCase();
+        return fullName.includes(inputVal.toLowerCase()) || student.email.toLowerCase().includes(inputVal.toLowerCase());
+    });
+ 
+    const studentList = document.querySelector('.student-list');
+    if (filteredStudents.length === 0) {
+        studentList.innerHTML = '<li>No students found...</li>';
+        document.querySelector('.link-list').innerHTML = ''; // Clear the pagination
+    } else {
+        showPage(filteredStudents, 1);  // Show the first page of the filtered results
+        addPagination(filteredStudents);
+    }
+ }
+ 
+ // Add event listener for the search functionality
+ document.querySelector('.student-search input').addEventListener('keyup', function() {
+    const inputVal = document.querySelector('.student-search input').value;
+    searchStudents(inputVal, data);
+ });
+ 
+ // Event listener for the search button
+ document.querySelector('.student-search button').addEventListener('click', function() {
+    const inputVal = document.querySelector('.student-search input').value;
+    searchStudents(inputVal, data);
+ });
+ 
